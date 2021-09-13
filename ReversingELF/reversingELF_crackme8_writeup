@@ -1,0 +1,81 @@
+$ gdb crackme8
+
+(gdb) disassemble main
+
+   0x0804849b <+0>:	lea    0x4(%esp),%ecx
+   0x0804849f <+4>:	and    $0xfffffff0,%esp
+   0x080484a2 <+7>:	pushl  -0x4(%ecx)
+   0x080484a5 <+10>:	push   %ebp
+   0x080484a6 <+11>:	mov    %esp,%ebp
+   0x080484a8 <+13>:	push   %ecx
+   0x080484a9 <+14>:	sub    $0x4,%esp
+   0x080484ac <+17>:	mov    %ecx,%eax
+   0x080484ae <+19>:	cmpl   $0x2,(%eax)
+   		//jump to line 53 if %eax (user input) == 2
+   0x080484b1 <+22>:	je     0x80484d0 <main+53> 
+   0x080484b3 <+24>:	mov    0x4(%eax),%eax
+   0x080484b6 <+27>:	mov    (%eax),%eax
+   0x080484b8 <+29>:	sub    $0x8,%esp
+   0x080484bb <+32>:	push   %eax
+   0x080484bc <+33>:	push   $0x8048660
+   0x080484c1 <+38>:	call   0x8048340 <printf@plt>
+   0x080484c6 <+43>:	add    $0x10,%esp
+   0x080484c9 <+46>:	mov    $0x1,%eax
+   0x080484ce <+51>:	jmp    0x804851c <main+129>
+   0x080484d0 <+53>:	mov    0x4(%eax),%eax
+   0x080484d3 <+56>:	add    $0x4,%eax
+   0x080484d6 <+59>:	mov    (%eax),%eax
+   0x080484d8 <+61>:	sub    $0xc,%esp
+   0x080484db <+64>:	push   %eax
+   0x080484dc <+65>:	call   0x8048380 <atoi@plt>
+   0x080484e1 <+70>:	add    $0x10,%esp
+   0x080484e4 <+73>:	cmp    $0xcafef00d,%eax
+   		//jump to line 103 if %eax == 0xcafef00d
+   0x080484e9 <+78>:	je     0x8048502 <main+103>
+   0x080484eb <+80>:	sub    $0xc,%esp
+   0x080484ee <+83>:	push   $0x8048674
+   0x080484f3 <+88>:	call   0x8048350 <puts@plt>
+   0x080484f8 <+93>:	add    $0x10,%esp
+   0x080484fb <+96>:	mov    $0x1,%eax
+   0x08048500 <+101>:	jmp    0x804851c <main+129>
+   		//will execute until target addr from here
+   0x08048502 <+103>:	sub    $0xc,%esp
+   0x08048505 <+106>:	push   $0x8048683
+   0x0804850a <+111>:	call   0x8048350 <puts@plt>
+   0x0804850f <+116>:	add    $0x10,%esp
+   		//0x08048512 target address, calls giveFlag
+   0x08048512 <+119>:	call   0x8048524 <giveFlag>
+   0x08048517 <+124>:	mov    $0x0,%eax
+   0x0804851c <+129>:	mov    -0x4(%ebp),%ecx
+   0x0804851f <+132>:	leave  
+   0x08048520 <+133>:	lea    -0x4(%ecx),%esp
+   0x08048523 <+136>:	ret
+
+(gdb) break *0x080484e4  //break before je main+103 comparison
+	
+	//partial new "disassemble main" output showing breakpoint
+	==> 0x080484e4 <+73>:	cmp    $0xcafef00d,%eax
+		0x080484e9 <+78>:	je     0x8048502 <main+103>
+
+(gdb) run 2 //passes check at 0x080484ae, jumps to main+53, breaks at 0x080484e4
+
+(gdb) info registers //shows that %eax will not pass check
+
+(gdb) set $eax=3405705229 //decimal value of 0xcafef00d
+
+(gdb) ni
+
+	...
+
+(gdb)
+
+	Access granted
+
+(gdb) ni
+
+	...
+
+(gdb)
+
+	FLAG
+
